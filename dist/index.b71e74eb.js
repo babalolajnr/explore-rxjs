@@ -614,7 +614,7 @@ addTodo$.subscribe((value)=>{
 });
 // Render the todo list in the UI
 function renderTodoList(list, items) {
-    while(list.firstChild)list.firstChild.remove();
+    while(list.firstChild != null)list.firstChild.remove();
     list.innerHTML = items.map((todo)=>`<li>${todo}</li>`).join("");
 }
 
