@@ -6,10 +6,6 @@ const filterInput: HTMLInputElement = document.getElementById('filterInput') as 
 const sortInput: HTMLInputElement = document.getElementById('sortInput') as any;
 const addTodo: HTMLButtonElement = document.getElementById('addTodo') as any;
 
-// const input$ = fromEvent(input, 'input').pipe(
-//     map((event: Event) => (event.target as HTMLInputElement).value),
-// );
-
 const addTodo$ = fromEvent(addTodo, 'click').pipe(
     map(() => input.value),
 );
@@ -30,7 +26,7 @@ const todoList$ = new BehaviorSubject<string[]>([]);
 
 combineLatest([filter$, sort$]).subscribe(([filterValue, sortValue]) => {
     // Update the todo list based on the input value, filter value, and sort value
-    const filteredList = todoList$.value.filter(todo => todo.includes(filterValue)).sort((a, b) => {
+    const filteredList = todoList$.value.filter(todo => todo.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase())).sort((a, b) => {
         if (sortValue === 'asc') {
             return a.localeCompare(b);
         } else {
@@ -49,8 +45,8 @@ todoList$.subscribe((items) => {
 
 // Handle user input and update the todo list
 addTodo$.subscribe((value) => {
-    if (input.value.trim() !== '') {
-        const updatedList = [...todoList$.value, input.value];
+    if (value.trim() !== '') {
+        const updatedList = [...todoList$.value, value];
         todoList$.next(updatedList);
         input.value = '';
     }

@@ -580,9 +580,6 @@ const list = document.getElementById("todoList");
 const filterInput = document.getElementById("filterInput");
 const sortInput = document.getElementById("sortInput");
 const addTodo = document.getElementById("addTodo");
-// const input$ = fromEvent(input, 'input').pipe(
-//     map((event: Event) => (event.target as HTMLInputElement).value),
-// );
 const addTodo$ = (0, _rxjs.fromEvent)(addTodo, "click").pipe((0, _rxjs.map)(()=>input.value));
 const filter$ = (0, _rxjs.fromEvent)(filterInput, "input").pipe((0, _rxjs.map)((event)=>event.target.value), (0, _rxjs.debounceTime)(300), (0, _rxjs.distinctUntilChanged)());
 const sort$ = (0, _rxjs.fromEvent)(sortInput, "change").pipe((0, _rxjs.map)((event)=>event.target.value));
@@ -593,7 +590,7 @@ const todoList$ = new (0, _rxjs.BehaviorSubject)([]);
     sort$
 ]).subscribe(([filterValue, sortValue])=>{
     // Update the todo list based on the input value, filter value, and sort value
-    const filteredList = todoList$.value.filter((todo)=>todo.includes(filterValue)).sort((a, b)=>{
+    const filteredList = todoList$.value.filter((todo)=>todo.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase())).sort((a, b)=>{
         if (sortValue === "asc") return a.localeCompare(b);
         else return b.localeCompare(a);
     });
@@ -606,10 +603,10 @@ todoList$.subscribe((items)=>{
 });
 // Handle user input and update the todo list
 addTodo$.subscribe((value)=>{
-    if (input.value.trim() !== "") {
+    if (value.trim() !== "") {
         const updatedList = [
             ...todoList$.value,
-            input.value
+            value
         ];
         todoList$.next(updatedList);
         input.value = "";
