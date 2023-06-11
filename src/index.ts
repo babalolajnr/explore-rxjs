@@ -4,9 +4,14 @@ const input: HTMLInputElement = document.getElementById('todoInput') as any;
 const list: HTMLUListElement = document.getElementById('todoList') as any;
 const filterInput: HTMLInputElement = document.getElementById('filterInput') as any;
 const sortInput: HTMLInputElement = document.getElementById('sortInput') as any;
+const addTodo: HTMLButtonElement = document.getElementById('addTodo') as any;
 
-const input$ = fromEvent(input, 'input').pipe(
-    map((event: Event) => (event.target as HTMLInputElement).value),
+// const input$ = fromEvent(input, 'input').pipe(
+//     map((event: Event) => (event.target as HTMLInputElement).value),
+// );
+
+const addTodo$ = fromEvent(addTodo, 'click').pipe(
+    map(() => input.value),
 );
 
 const filter$ = fromEvent(filterInput, 'input').pipe(
@@ -23,7 +28,7 @@ const sort$ = fromEvent(sortInput, 'change').pipe(
 // Create a todo list subject to manage state
 const todoList$ = new BehaviorSubject<string[]>([]);
 
-combineLatest([input$, filter$, sort$]).subscribe(([inputValue, filterValue, sortValue]) => {
+combineLatest([filter$, sort$]).subscribe(([filterValue, sortValue]) => {
     // Update the todo list based on the input value, filter value, and sort value
     const filteredList = todoList$.value.filter(todo => todo.includes(filterValue)).sort((a, b) => {
         if (sortValue === 'asc') {
@@ -43,12 +48,12 @@ todoList$.subscribe((items) => {
 });
 
 // Handle user input and update the todo list
-input$.subscribe((value) => {
-  if (value.trim() !== '') {
-    const updatedList = [...todoList$.value, value];
-    todoList$.next(updatedList);
-    input.value = '';
-  }
+addTodo$.subscribe((value) => {
+    if (input.value.trim() !== '') {
+        const updatedList = [...todoList$.value, input.value];
+        todoList$.next(updatedList);
+        input.value = '';
+    }
 });
 
 // Render the todo list in the UI
